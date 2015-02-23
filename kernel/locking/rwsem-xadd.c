@@ -271,7 +271,7 @@ static inline bool rwsem_try_write_lock(long count, struct rw_semaphore *sem)
  */
 static inline bool rwsem_try_write_lock_unqueued(struct rw_semaphore *sem)
 {
-	long old, count = ACCESS_ONCE(sem->count);
+	long old, count = READ_ONCE(sem->count);
 
 	while (true) {
 		if (!(count == 0 || count == RWSEM_WAITING_BIAS))
@@ -294,7 +294,7 @@ static inline bool rwsem_can_spin_on_owner(struct rw_semaphore *sem)
 		return false;
 
 	rcu_read_lock();
-	owner = ACCESS_ONCE(sem->owner);
+	owner = READ_ONCE(sem->owner);
 	if (owner)
 		on_cpu = owner->on_cpu;
 	rcu_read_unlock();
@@ -359,7 +359,7 @@ static bool rwsem_optimistic_spin(struct rw_semaphore *sem)
 		goto done;
 
 	while (true) {
-		owner = ACCESS_ONCE(sem->owner);
+		owner = READ_ONCE(sem->owner);
 		if (owner && !rwsem_spin_on_owner(sem, owner))
 			break;
 
@@ -434,7 +434,7 @@ __rwsem_down_write_failed_common(struct rw_semaphore *sem, int state)
 
 	/* we're now waiting on the lock, but no longer actively locking */
 	if (waiting) {
-		count = ACCESS_ONCE(sem->count);
+		count = READ_ONCE(sem->count);
 
 		/*
 		 * If there were already threads queued before us and there are
