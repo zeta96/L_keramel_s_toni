@@ -823,6 +823,9 @@ static int zram_bvec_rw(struct zram *zram, struct bio_vec *bvec, u32 index,
 	unsigned long start_time = jiffies;
 	int ret;
 
+	generic_start_io_acct(rw, bvec->bv_len >> SECTOR_SHIFT,
+			&zram->disk->part0);
+
 	if (rw == READ) {
 		atomic64_inc(&zram->stats.num_reads);
 		ret = zram_bvec_read(zram, bvec, index, offset);
@@ -831,6 +834,8 @@ static int zram_bvec_rw(struct zram *zram, struct bio_vec *bvec, u32 index,
 		atomic64_inc(&zram->stats.num_writes);
 		ret = zram_bvec_write(zram, bvec, index, offset);
 	}
+
+	generic_end_io_acct(rw, &zram->disk->part0, start_time);
 
 	if (unlikely(ret)) {
 		if (rw == READ)
