@@ -293,7 +293,7 @@ u64 notrace ktime_get_mono_fast_ns(void)
 	u64 now;
 
 	do {
-		seq = raw_read_seqcount(&tk_fast_mono.seq);
+		seq = raw_read_seqcount_latch(&tk_fast_mono.seq);
 		tkr = tk_fast_mono.base + (seq & 0x01);
 		now = ktime_to_ns(tkr->base) + timekeeping_get_ns(tkr);
 
