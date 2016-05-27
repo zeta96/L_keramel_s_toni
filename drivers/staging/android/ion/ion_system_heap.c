@@ -87,6 +87,7 @@ static struct page *alloc_buffer_page(struct ion_system_heap *heap,
 	struct page *page;
 	struct ion_page_pool *pool;
 	int vmid = get_secure_vmid(buffer->flags);
+	struct device *dev = heap->heap.priv;
 
 	if (*from_pool) {
 		if (vmid > 0)
@@ -231,6 +232,7 @@ static int ion_system_heap_allocate(struct ion_heap *heap,
 	struct pages_mem data;
 	unsigned int sz;
 	int vmid = get_secure_vmid(buffer->flags);
+	struct device *dev = heap->priv;
 
 	if (ion_heap_is_system_heap_type(buffer->heap->type) &&
 	    is_secure_vmid_valid(vmid)) {
@@ -327,7 +329,7 @@ static int ion_system_heap_allocate(struct ion_heap *heap,
 	}
 
 	if (nents_sync) {
-		dma_sync_sg_for_device(NULL, table_sync.sgl, table_sync.nents,
+		dma_sync_sg_for_device(dev, table_sync.sgl, table_sync.nents,
 				       DMA_BIDIRECTIONAL);
 		if (vmid > 0) {
 			ret = ion_system_secure_heap_assign_sg(&table_sync,
@@ -384,11 +386,12 @@ void ion_system_heap_free(struct ion_buffer *buffer)
 	LIST_HEAD(pages);
 	int i;
 	int vmid = get_secure_vmid(buffer->flags);
+	struct device *dev = heap->priv;
 
 	if (!(buffer->private_flags & ION_PRIV_FLAG_SHRINKER_FREE) &&
 	    !(buffer->flags & ION_FLAG_POOL_FORCE_ALLOC)) {
 		if (vmid < 0)
-			msm_ion_heap_sg_table_zero(table, buffer->size);
+			msm_ion_heap_sg_table_zero(dev, table, buffer->size);
 	} else if (vmid > 0) {
 		if (ion_system_secure_heap_unassign_sg(table, vmid))
 			return;
@@ -648,7 +651,8 @@ static void ion_system_heap_destroy_pools(struct ion_page_pool **pools)
  * nothing. If it succeeds you'll eventually need to use
  * ion_system_heap_destroy_pools to destroy the pools.
  */
-static int ion_system_heap_create_pools(struct ion_page_pool **pools)
+static int ion_system_heap_create_pools(struct device *dev,
+					struct ion_page_pool **pools)
 {
 	int i;
 	for (i = 0; i < num_orders; i++) {
@@ -657,7 +661,7 @@ static int ion_system_heap_create_pools(struct ion_page_pool **pools)
 
 		if (orders[i])
 			gfp_flags = high_order_gfp_flags;
-		pool = ion_page_pool_create(gfp_flags, orders[i]);
+		pool = ion_page_pool_create(dev, gfp_flags, orders[i]);
 		if (!pool)
 			goto err_create_pool;
 		pools[i] = pool;
@@ -668,11 +672,12 @@ err_create_pool:
 	return 1;
 }
 
-struct ion_heap *ion_system_heap_create(struct ion_platform_heap *unused)
+struct ion_heap *ion_system_heap_create(struct ion_platform_heap *data)
 {
 	struct ion_system_heap *heap;
 	int i;
 	int pools_size = sizeof(struct ion_page_pool *) * num_orders;
+	struct device *dev = data->priv;
 
 	heap = kzalloc(sizeof(struct ion_system_heap), GFP_KERNEL);
 	if (!heap)
@@ -694,15 +699,16 @@ struct ion_heap *ion_system_heap_create(struct ion_platform_heap *unused)
 			heap->secure_pools[i] = kzalloc(pools_size, GFP_KERNEL);
 			if (!heap->secure_pools[i])
 				goto err_create_secure_pools;
-			if (ion_system_heap_create_pools(heap->secure_pools[i]))
+			if (ion_system_heap_create_pools(
+					dev, heap->secure_pools[i]))
 				goto err_create_secure_pools;
 		}
 	}
 
-	if (ion_system_heap_create_pools(heap->uncached_pools))
+	if (ion_system_heap_create_pools(dev, heap->uncached_pools))
 		goto err_create_uncached_pools;
 
-	if (ion_system_heap_create_pools(heap->cached_pools))
+	if (ion_system_heap_create_pools(dev, heap->cached_pools))
 		goto err_create_cached_pools;
 
 	heap->heap.debug_show = ion_system_heap_debug_show;
@@ -759,6 +765,7 @@ static int ion_system_contig_heap_allocate(struct ion_heap *heap,
 	struct sg_table *table;
 	unsigned long i;
 	int ret;
+	struct device *dev = heap->priv;
 
 	if (align > (PAGE_SIZE << order))
 		return -EINVAL;
@@ -787,7 +794,7 @@ static int ion_system_contig_heap_allocate(struct ion_heap *heap,
 
 	buffer->priv_virt = table;
 
-	ion_pages_sync_for_device(NULL, page, len, DMA_BIDIRECTIONAL);
+	ion_pages_sync_for_device(dev, page, len, DMA_BIDIRECTIONAL);
 
 	return 0;
 
