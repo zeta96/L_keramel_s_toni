@@ -17,6 +17,7 @@
 #include <linux/wait.h>
 #include <linux/mutex.h>
 #include <linux/msm_audio_ion.h>
+#include <linux/qpnp/qpnp-haptic.h>
 
 #ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
 #include <linux/input/doubletap2wake.h>
@@ -5966,6 +5967,8 @@ int voc_end_voice_call(uint32_t session_id)
 		ret = -EINVAL;
 	}
 
+	qpnp_disable_haptics(false);
+
 	mutex_unlock(&v->lock);
 	return ret;
 }
@@ -6295,6 +6298,8 @@ int voc_start_voice_call(uint32_t session_id)
 		ret = -EINVAL;
 		goto fail;
 	}
+
+	qpnp_disable_haptics(true);
 fail:
 	mutex_unlock(&v->lock);
 	return ret;
