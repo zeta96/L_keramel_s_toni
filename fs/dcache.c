@@ -36,13 +36,17 @@
 #include <linux/bit_spinlock.h>
 #include <linux/rculist_bl.h>
 #include <linux/prefetch.h>
-#include <linux/powersuspend.h>
 #include <linux/ratelimit.h>
 #include <linux/list_lru.h>
 #include <linux/kasan.h>
 
 #include "internal.h"
 #include "mount.h"
+
+#ifdef CONFIG_STATE_NOTIFIER
+#include <linux/state_notifier.h>
+static struct notifier_block dcache_state_notif;
+#endif
 
 /*
  * Usage:
@@ -3414,26 +3418,26 @@ void d_tmpfile(struct dentry *dentry, struct inode *inode)
 }
 EXPORT_SYMBOL(d_tmpfile);
 
-static void cpressure_power_suspend(struct power_suspend *handler)
+#ifdef CONFIG_STATE_NOTIFIER
+static int state_notifier_callback(struct notifier_block *this,
+				unsigned long event, void *data)
 {
-	if (sysctl_vfs_cache_pressure != resume_cache_pressure)
-		resume_cache_pressure = sysctl_vfs_cache_pressure;
- 
-	sysctl_vfs_cache_pressure = suspend_cache_pressure;
+
+	switch (event) {
+		case STATE_NOTIFIER_ACTIVE:
+			sysctl_vfs_cache_pressure = resume_cache_pressure;
+			break;
+		case STATE_NOTIFIER_SUSPEND:
+			sysctl_vfs_cache_pressure = suspend_cache_pressure;
+			break;
+		default:
+			break;
+	}
+
+	return NOTIFY_OK;
+
 }
- 
-static void cpressure_power_resume(struct power_suspend *handler)
-{
-	if (sysctl_vfs_cache_pressure != suspend_cache_pressure)
-		suspend_cache_pressure = sysctl_vfs_cache_pressure;
- 
-	sysctl_vfs_cache_pressure = resume_cache_pressure;
-}
- 
-static struct power_suspend cpressure_suspend = {
-	.suspend = cpressure_power_suspend,
-	.resume = cpressure_power_resume,
-};
+#endif
 
 static __initdata unsigned long dhash_entries;
 static int __init set_dhash_entries(char *str)
@@ -3509,10 +3513,12 @@ EXPORT_SYMBOL(d_genocide);
 
 void __init vfs_caches_init_early(void)
 {
-    sysctl_vfs_cache_pressure = resume_cache_pressure =
-	DEFAULT_VFS_CACHE_PRESSURE;
+
+    	sysctl_vfs_cache_pressure = resume_cache_pressure =
+		DEFAULT_VFS_CACHE_PRESSURE;
 	sysctl_vfs_suspend_cache_pressure = suspend_cache_pressure =
-	DEFAULT_VFS_SUSPEND_CACHE_PRESSURE;
+		DEFAULT_VFS_SUSPEND_CACHE_PRESSURE;
+
 	dcache_init_early();
 	inode_init_early();
 }
@@ -3536,7 +3542,14 @@ void __init vfs_caches_init(unsigned long mempages)
 	mnt_init();
 	bdev_cache_init();
 	chrdev_init();
-    register_power_suspend(&cpressure_suspend);
+
+#ifdef CONFIG_STATE_NOTIFIER
+	dcache_state_notif.notifier_call = state_notifier_callback;
+	if (state_register_client(&dcache_state_notif))
+		pr_err("%s: Failed to register State notifier callback\n",
+			__func__);
+#endif
+
 }
 
 void take_dentry_name_snapshot(struct name_snapshot *name, struct dentry *dentry)
