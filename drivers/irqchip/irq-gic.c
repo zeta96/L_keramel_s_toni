@@ -230,7 +230,11 @@ static int gic_suspend(void)
 	return 0;
 }
 
+#ifdef CONFIG_MSM_SHOW_RESUME_IRQ
 extern int msm_show_resume_irq_mask;
+#else
+#define msm_show_resume_irq_mask 0
+#endif
 
 /*
  * gic_show_pending_irq - Shows the pending interrupts

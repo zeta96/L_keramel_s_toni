@@ -87,6 +87,7 @@ static inline bool qpnpint_show_resume_irq(void)
 	return msm_show_resume_irq_mask;
 }
 #else
+#define msm_show_resume_irq_mask 0
 static inline bool qpnpint_show_resume_irq(void)
 {
 	return false;
@@ -94,6 +95,7 @@ static inline bool qpnpint_show_resume_irq(void)
 #endif
 
 #else
+#define msm_show_resume_irq_mask 0
 static inline int __init qpnpint_of_init(struct device_node *node,
 				  struct device_node *parent)
 {
