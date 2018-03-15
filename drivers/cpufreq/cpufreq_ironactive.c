@@ -33,9 +33,7 @@
 #include <linux/kthread.h>
 #include <linux/slab.h>
 #include <linux/kernel_stat.h>
-#ifdef CONFIG_STATE_NOTIFIER
-#include <linux/state_notifier.h>
-#endif
+#include <linux/display_state.h>
 #include <asm/cputime.h>
 
 #define CREATE_TRACE_POINTS
@@ -115,9 +113,8 @@ struct cpufreq_ironactive_tunables {
 	 * The sample rate of the timer used to increase frequency
 	 */
 	unsigned long timer_rate;
-#ifdef CONFIG_STATE_NOTIFIER
 	unsigned long timer_rate_prev;
-#endif
+
 	/*
 	 * Wait this long before raising speed above hispeed, by default a
 	 * single timer interval.
@@ -434,6 +431,7 @@ static void cpufreq_ironactive_timer(unsigned long data)
 	unsigned long max_cpu;
 	int i, fcpu;
 	struct cpufreq_govinfo govinfo;
+	bool display_on = is_display_on();
 
 	if (!down_read_trylock(&ppol->enable_sem))
 		return;
@@ -445,18 +443,16 @@ static void cpufreq_ironactive_timer(unsigned long data)
 	spin_lock_irqsave(&ppol->load_lock, flags);
 	ppol->last_evaluated_jiffy = get_jiffies_64();
 
-#ifdef CONFIG_STATE_NOTIFIER
-	if (!state_suspended &&
+	if (display_on &&
 		tunables->timer_rate != tunables->timer_rate_prev)
 		tunables->timer_rate = tunables->timer_rate_prev;
-	else if (state_suspended &&
+	else if (!display_on &&
 		tunables->timer_rate != DEFAULT_TIMER_RATE_SUSP) {
 		tunables->timer_rate_prev = tunables->timer_rate;
 		tunables->timer_rate
 			= max(tunables->timer_rate,
 				DEFAULT_TIMER_RATE_SUSP);
 	}
-#endif
 
 	if (tunables->use_sched_load)
 		sched_get_cpus_busy(ppol->cpu_busy_times,
@@ -1008,9 +1004,7 @@ static ssize_t store_timer_rate(struct cpufreq_ironactive_tunables *tunables,
 		pr_warn("timer_rate not aligned to jiffy. Rounded up to %lu\n",
 			val_round);
 	tunables->timer_rate = val_round;
-#ifdef CONFIG_STATE_NOTIFIER
 	tunables->timer_rate_prev = val_round;
-#endif
 
 	if (!tunables->use_sched_load)
 		return count;
@@ -1021,9 +1015,7 @@ static ssize_t store_timer_rate(struct cpufreq_ironactive_tunables *tunables,
 		t = per_cpu(polinfo, cpu)->cached_tunables;
 		if (t && t->use_sched_load) {
 			t->timer_rate = val_round;
-#ifdef CONFIG_STATE_NOTIFIER
 			t->timer_rate_prev = val_round;
-#endif
 		}
 	}
 	set_window_helper(tunables);
@@ -1458,9 +1450,7 @@ static struct cpufreq_ironactive_tunables *alloc_tunable(
 	tunables->ntarget_loads = ARRAY_SIZE(default_target_loads);
 	tunables->min_sample_time = DEFAULT_MIN_SAMPLE_TIME;
 	tunables->timer_rate = DEFAULT_TIMER_RATE;
-#ifdef CONFIG_STATE_NOTIFIER
 	tunables->timer_rate_prev = DEFAULT_TIMER_RATE;
-#endif
 	tunables->boostpulse_duration_val = DEFAULT_MIN_SAMPLE_TIME;
 	tunables->timer_slack_val = DEFAULT_TIMER_SLACK;
 
