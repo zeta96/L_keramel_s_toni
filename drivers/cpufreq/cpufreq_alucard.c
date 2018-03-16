@@ -981,8 +981,8 @@ static struct cpufreq_alucard_tunables *alloc_tunable(
 	tunables->timer_rate = DEFAULT_TIMER_RATE;
 	tunables->timer_rate_prev = DEFAULT_TIMER_RATE;
 	tunables->timer_slack_val = DEFAULT_TIMER_SLACK;
-	tunables->freq_responsiveness = policy->min;
-	tunables->freq_responsiveness_max = policy->max;
+	tunables->freq_responsiveness = policy->user_policy.min;
+	tunables->freq_responsiveness_max = policy->user_policy.max;
 	tunables->cpus_up_rate_at_max_freq = CPUS_UP_RATE;
 	tunables->cpus_up_rate = CPUS_UP_RATE;
 	tunables->cpus_down_rate_at_max_freq = CPUS_DOWN_RATE;

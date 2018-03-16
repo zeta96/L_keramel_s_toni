@@ -905,8 +905,8 @@ static struct cpufreq_nightmare_tunables *alloc_tunable(
 	tunables->timer_rate = DEFAULT_TIMER_RATE;
 	tunables->timer_rate_prev = DEFAULT_TIMER_RATE;
 	tunables->timer_slack_val = DEFAULT_TIMER_SLACK;
-	tunables->freq_for_responsiveness = policy->min;
-	tunables->freq_for_responsiveness_max = policy->max;
+	tunables->freq_for_responsiveness = policy->user_policy.min;
+	tunables->freq_for_responsiveness_max = policy->user_policy.max;
 	tunables->freq_step_at_min_freq = FREQ_STEP_AT_MIN_FREQ;
 	tunables->freq_step = FREQ_STEP;
 	tunables->freq_up_brake_at_min_freq = FREQ_UP_BRAKE_AT_MIN_FREQ;
