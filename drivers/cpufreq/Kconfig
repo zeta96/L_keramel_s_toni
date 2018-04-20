@@ -139,6 +139,14 @@ config CPU_FREQ_DEFAULT_GOV_GABRIELPLUS
 	select CPU_FREQ_GOV_GABRIELPLUS
 	help
 
+config CPU_FREQ_DEFAULT_GOV_LISI
+	bool "lisi"
+	select CPU_FREQ_GOV_LISI
+	help
+	  Use the CPUFreq governor 'lisi' as default. This allows
+	  you to get a full dynamic cpu frequency and latency-sensitive
+	  loads
+
 config CPU_FREQ_DEFAULT_GOV_SCHED
 	bool "sched"
 	select CPU_FREQ_GOV_INTERACTIVE
@@ -232,6 +240,17 @@ config CPU_FREQ_GOV_GABRIELPLUS
 	depends on CPU_FREQ
 	select CPU_FREQ_GOV_COMMON
 	default y
+
+config CPU_FREQ_GOV_LISI
+	bool "'lisi' cpufreq policy governor"
+	help
+	  'lisi' - This driver adds a dynamic cpufreq policy governor
+	  designed for latency-sensitive workloads.
+
+	  The governor does a periodic polling and
+	  changes frequency based on the CPU utilization.
+
+	  If in doubt, say N.
 
 config CPU_FREQ_GOV_CONSERVATIVE
 	tristate "'conservative' cpufreq governor"
