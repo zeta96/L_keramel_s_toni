@@ -134,6 +134,11 @@ config CPU_FREQ_DEFAULT_GOV_GABRIEL
 	select CPU_FREQ_GOV_GABRIEL
 	help
 
+config CPU_FREQ_DEFAULT_GOV_GABRIELPLUS
+	bool "gabrielplus"
+	select CPU_FREQ_GOV_GABRIELPLUS
+	help
+
 config CPU_FREQ_DEFAULT_GOV_SCHED
 	bool "sched"
 	select CPU_FREQ_GOV_INTERACTIVE
@@ -218,6 +223,12 @@ config CPU_FREQ_GOV_INTERACTIVE
 
 config CPU_FREQ_GOV_GABRIEL
 	tristate "'gabriel' cpufreq governor"
+	depends on CPU_FREQ
+	select CPU_FREQ_GOV_COMMON
+	default y
+
+config CPU_FREQ_GOV_GABRIELPLUS
+	tristate "'gabrielplus' cpufreq governor"
 	depends on CPU_FREQ
 	select CPU_FREQ_GOV_COMMON
 	default y
