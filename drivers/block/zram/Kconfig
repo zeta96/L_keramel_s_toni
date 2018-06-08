@@ -11,6 +11,7 @@ config ZRAM
 
 	  It has several use cases, for example: /tmp storage, use as swap
 	  disks and maybe many more.
+
 	  See Documentation/blockdev/zram.txt for more information.
 
 config ZRAM_WRITEBACK
@@ -22,7 +23,6 @@ config ZRAM_WRITEBACK
 	 in memory. Instead, write it out to backing device.
 	 For this feature, admin should set up backing device via
 	 /sys/block/zramX/backing_dev.
-
 
 	 See Documentation/blockdev/zram.txt for more information.
 
