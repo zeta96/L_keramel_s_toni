@@ -386,11 +386,12 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	case GF_IOC_POWER_OFF:
 		if (gf_dev->device_available == 0)
 			pr_info("Sensor has already powered-off.\n");
-		else
+		else {
 			gf_power_off(gf_dev);
 			gf_dev->device_available = 0;
+		}
 		break;
-		default:
+	default:
 		gf_dbg("Unsupport cmd:0x%x\n", cmd);
 		break;
 	}
