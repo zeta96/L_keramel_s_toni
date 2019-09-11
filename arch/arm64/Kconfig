@@ -355,6 +355,11 @@ config ARCH_MSM8996
 	  This enables support for the MSM8996 chipset. If you don't
 	  know what to do here, say N
 
+config BOARD_SANTONI
+        bool "Enable support for Santoni boards"
+        depends on ARCH_MSM
+        select ARCH_MSM8940
+
 config ARCH_MSMCOBALT
 	bool "Enable Support for Qualcomm MSMCOBALT"
 	depends on ARCH_MSM
