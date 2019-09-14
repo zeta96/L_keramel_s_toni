@@ -1673,5 +1673,5 @@ void ufsdbg_remove_debugfs(struct ufs_hba *hba)
 	ufshcd_vops_remove_debugfs(hba);
 	debugfs_remove_recursive(hba->debugfs_files.debugfs_root);
 	kfree(hba->ufs_stats.tag_stats);
-endif
+#endif
 }
