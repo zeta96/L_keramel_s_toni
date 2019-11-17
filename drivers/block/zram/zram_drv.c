@@ -820,7 +820,7 @@ static void zram_bio_discard(struct zram *zram, u32 index,
 static int zram_bvec_rw(struct zram *zram, struct bio_vec *bvec, u32 index,
 			int offset, int rw)
 {
-	unsigned long start_time = jiffies;
+	__maybe_unused unsigned long start_time = jiffies;
 	int ret;
 
 	if (rw == READ) {
