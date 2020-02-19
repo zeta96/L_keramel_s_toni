@@ -1,0 +1,19 @@
+kind: pipeline
+name: kernel_santoni
+
+platform:
+  os: linux
+  arch: amd64
+
+clone:
+  depth: 1
+
+steps:
+  - name: Compile
+    image: archlinux:latest
+    commands:
+      - pacman -Sy && pacman -S --needed --noconfirm base-devel bash python2 bison bc zip unzip curl git wget zstd
+      - sh -c "$(curl -fsSL https://raw.githubusercontent.com/zeta96/kernelci/master/L_drone_gcc_s)"
+    when:
+      branch:
+        - LA.UM.8.6.r1/skybase
