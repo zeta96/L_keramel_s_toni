@@ -371,7 +371,7 @@ static void cpufreq_gabrielplus_timer(unsigned long data)
 		&per_cpu(cpuinfo, data);
 	struct cpufreq_gabrielplus_tunables *tunables =
 		pcpu->policy->governor_data;
-	unsigned int timer_rate_idle = tunables->timer_rate_idle;
+	unsigned int __maybe_unused timer_rate_idle = tunables->timer_rate_idle;
 	unsigned int avg_long_prev_load;
 	unsigned int load_idx;
 	unsigned int new_freq;
