@@ -349,7 +349,7 @@ static void cpufreq_gabriel_timer(unsigned long data)
 	u64 now;
 	unsigned int delta_time;
 	u64 cputime_speedadj;
-	int cpu_load;
+	int cpu_load = 0;
 	struct cpufreq_gabriel_cpuinfo *pcpu =
 		&per_cpu(cpuinfo, data);
 	struct cpufreq_gabriel_tunables *tunables =
