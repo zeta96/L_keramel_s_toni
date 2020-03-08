@@ -369,7 +369,7 @@ static int __ref _cpu_down(unsigned int cpu, int tasks_frozen)
 	if (err) {
 		nr_calls--;
 		__cpu_notify(CPU_DOWN_FAILED | mod, hcpu, nr_calls, NULL);
-		pr_warn("%s: attempt to take down CPU %u failed\n",
+		pr_debug("%s: attempt to take down CPU %u failed\n",
 			__func__, cpu);
 		goto out_release;
 	}
@@ -490,7 +490,7 @@ static int _cpu_up(unsigned int cpu, int tasks_frozen)
 	ret = __cpu_notify(CPU_UP_PREPARE | mod, hcpu, -1, &nr_calls);
 	if (ret) {
 		nr_calls--;
-		pr_warn("%s: attempt to bring up CPU %u failed\n",
+		pr_debug("%s: attempt to bring up CPU %u failed\n",
 			__func__, cpu);
 		goto out_notify;
 	}
