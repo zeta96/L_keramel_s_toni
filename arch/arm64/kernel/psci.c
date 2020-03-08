@@ -512,7 +512,7 @@ static int cpu_psci_cpu_kill(unsigned int cpu)
 		usleep_range(100, 1000);
 	} while (time_before(jiffies, end));
 
-	pr_warn("CPU%d may not have shut down cleanly (AFFINITY_INFO reports %d)\n",
+	pr_debug("CPU%d may not have shut down cleanly (AFFINITY_INFO reports %d)\n",
 			cpu, err);
 	/* Make op_cpu_kill() fail. */
 	return 0;
