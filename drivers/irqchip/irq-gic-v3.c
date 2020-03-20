@@ -122,10 +122,7 @@ static u64 __maybe_unused gic_read_iar(void)
 {
 	u64 irqstat;
 
-	asm volatile(DEFINE_MRS_S
-		"mrs_s %0, " __stringify(ICC_IAR1_EL1) "\n"
-		UNDEFINE_MRS_S
-		: "=r" (irqstat));
+	asm volatile("mrs_s %0, " __stringify(ICC_IAR1_EL1) : "=r" (irqstat));
 	/* As per the architecture specification */
 	mb();
 	return irqstat;
@@ -133,10 +130,7 @@ static u64 __maybe_unused gic_read_iar(void)
 
 static void __maybe_unused gic_write_pmr(u64 val)
 {
-	asm volatile(DEFINE_MSR_S
-		"msr_s " __stringify(ICC_PMR_EL1) ", %0\n"
-		UNDEFINE_MSR_S
-		: : "r" ((u64)val));
+	asm volatile("msr_s " __stringify(ICC_PMR_EL1) ", %0" : : "r" (val));
 	/* As per the architecture specification */
 	isb();
 	mb();
@@ -144,28 +138,19 @@ static void __maybe_unused gic_write_pmr(u64 val)
 
 static void __maybe_unused gic_write_ctlr(u64 val)
 {
-	asm volatile(DEFINE_MSR_S
-		"msr_s " __stringify(ICC_CTLR_EL1) ", %0\n"
-		UNDEFINE_MSR_S
-		: : "r" ((u64)val));
+	asm volatile("msr_s " __stringify(ICC_CTLR_EL1) ", %0" : : "r" (val));
 	isb();
 }
 
 static void __maybe_unused gic_write_grpen1(u64 val)
 {
-	asm volatile(DEFINE_MSR_S
-		"msr_s " __stringify(ICC_GRPEN1_EL1) ", %0\n"
-		UNDEFINE_MSR_S
-		: : "r" ((u64)val));
+	asm volatile("msr_s " __stringify(ICC_GRPEN1_EL1) ", %0" : : "r" (val));
 	isb();
 }
 
 static void __maybe_unused gic_write_sgi1r(u64 val)
 {
-	asm volatile(DEFINE_MSR_S
-		"msr_s " __stringify(ICC_SGI1R_EL1) ", %0\n"
-		UNDEFINE_MSR_S
-		: : "r" (val));
+	asm volatile("msr_s " __stringify(ICC_SGI1R_EL1) ", %0" : : "r" (val));
 	/* As per the architecture specification */
 	isb();
 	mb();
@@ -175,15 +160,9 @@ static void gic_enable_sre(void)
 {
 	u64 val;
 
-	asm volatile(DEFINE_MRS_S
-		"mrs_s %0, " __stringify(ICC_SRE_EL1) "\n"
-		UNDEFINE_MRS_S
-		: "=r" (val));
+	asm volatile("mrs_s %0, " __stringify(ICC_SRE_EL1) : "=r" (val));
 	val |= ICC_SRE_EL1_SRE;
-	asm volatile(DEFINE_MSR_S
-		"msr_s " __stringify(ICC_SRE_EL1) ", %0\n"
-		UNDEFINE_MSR_S
-		: : "r" ((u64)val));
+	asm volatile("msr_s " __stringify(ICC_SRE_EL1) ", %0" : : "r" (val));
 	isb();
 
 	/*
@@ -193,10 +172,7 @@ static void gic_enable_sre(void)
 	 *
 	 * Kindly inform the luser.
 	 */
-	asm volatile(DEFINE_MRS_S
-		"mrs_s %0, " __stringify(ICC_SRE_EL1) "\n"
-		UNDEFINE_MRS_S
-		: "=r" (val));
+	asm volatile("mrs_s %0, " __stringify(ICC_SRE_EL1) : "=r" (val));
 	if (!(val & ICC_SRE_EL1_SRE))
 		pr_err("GIC: unable to set SRE (disabled at EL2), panic ahead\n");
 }
