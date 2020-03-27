@@ -67,7 +67,7 @@ static inline int __down_write_killable(struct rw_semaphore *sem)
 {
 	long tmp;
 
-	tmp = atomic_long_add_return_acquire(RWSEM_ACTIVE_WRITE_BIAS,
+	tmp = atomic_long_add_return(RWSEM_ACTIVE_WRITE_BIAS,
 				     (atomic_long_t *)&sem->count);
 	if (unlikely(tmp != RWSEM_ACTIVE_WRITE_BIAS))
 		if (IS_ERR(rwsem_down_write_failed_killable(sem)))
