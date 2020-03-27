@@ -310,10 +310,10 @@ EXPORT_SYMBOL(nla_memcmp);
  */
 int nla_strcmp(const struct nlattr *nla, const char *str)
 {
-	unsigned int len = strlen(str);
+	int len = strlen(str);
 	char *buf = nla_data(nla);
-	unsigned int attrlen = nla_len(nla);
-	unsigned int d;
+	int attrlen = nla_len(nla);
+	int d;
 
 	if (attrlen > 0 && buf[attrlen - 1] == '\0')
 		attrlen--;
