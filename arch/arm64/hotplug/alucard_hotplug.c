@@ -661,26 +661,26 @@ show_pcpu_param(hotplug_rate_7_0, down_rate, 7);
 show_pcpu_param(hotplug_rate_8_0, down_rate, 8);
 
 #define store_pcpu_param(file_name, var_name, num_core)		\
-static ssize_t store_##file_name		\
-(struct kobject *kobj, struct attribute *attr,				\
-	const char *buf, size_t count)					\
-{									\
-	unsigned int input;						\
-	struct hotplug_cpuinfo *pcpu_info; 		\
-	int ret;									\
-													\
-	ret = sscanf(buf, "%u", &input);					\
-	if (ret != 1)											\
-		return -EINVAL;										\
-																\
-	pcpu_info = &per_cpu(od_hotplug_cpuinfo, num_core - 1); 	\
-															\
-	if (input == pcpu_info->var_name) {		\
-		return count;						\
-	}								\
-										\
-	pcpu_info->var_name = input;			\
-	return count;							\
+static ssize_t store_##file_name				\
+(struct kobject *kobj, struct attribute *attr,			\
+	const char *buf, size_t count)				\
+{								\
+	unsigned int input;					\
+	struct hotplug_cpuinfo *pcpu_info; 			\
+	int ret;						\
+								\
+	ret = sscanf(buf, "%u", &input);			\
+	if (ret != 1)						\
+		return -EINVAL;					\
+								\
+	pcpu_info = &per_cpu(od_hotplug_cpuinfo, num_core - 1);	\
+								\
+	if (input == pcpu_info->var_name) {			\
+		return count;					\
+	}							\
+								\
+	pcpu_info->var_name = input;				\
+	return count;						\
 }
 
 store_pcpu_param(hotplug_freq_1_1, up_freq, 1);
@@ -927,7 +927,7 @@ static ssize_t store_maxcoreslimit(struct kobject *a, struct attribute *b,
 
 	mutex_lock(&hotplug_tuners_ins.alu_hotplug_mutex);
 
-	if (hotplug_tuners_ins.maxcoreslimit == input) {
+	if ((hotplug_tuners_ins.maxcoreslimit == input) || (input < hotplug_tuners_ins.min_cpus_online)) {
 		mutex_unlock(&hotplug_tuners_ins.alu_hotplug_mutex);
 		return count;
 	}
@@ -957,7 +957,7 @@ static ssize_t store_maxcoreslimit_sleep(struct kobject *a,
 
 	mutex_lock(&hotplug_tuners_ins.alu_hotplug_mutex);
 
-	if (hotplug_tuners_ins.maxcoreslimit_sleep == input) {
+	if ((hotplug_tuners_ins.maxcoreslimit_sleep == input) || (input < hotplug_tuners_ins.min_cpus_online)) {
 		mutex_unlock(&hotplug_tuners_ins.alu_hotplug_mutex);
 		return count;
 	}
