@@ -12,7 +12,7 @@ steps:
   - name: Compile
     image: fedora:latest
     commands:
-      - dnf update && dnf groupinstall "Development Tools" && dnf groupinstall "C Development Tools and Libraries"
+      - dnf update && dnf groupinstall "Development Tools" "C Development Tools and Libraries" -y
       - sh -c "$(curl -fsSL https://raw.githubusercontent.com/zeta96/kernelci/master/L_drone_gcc_s)"
     when:
       branch:
