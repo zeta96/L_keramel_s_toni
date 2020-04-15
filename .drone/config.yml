@@ -12,7 +12,7 @@ steps:
   - name: Compile
     image: archlinux:latest
     commands:
-      - pacman -Sy && pacman -S --needed --noconfirm base-devel bash python2 bison bc zip unzip curl git wget zstd
+      - pacman -Sy && pacman -S --needed --noconfirm base-devel bash python2 bison bc zip unzip curl git wget zstd && ln -sf /usr/lib/libffi.so.7 /usr/lib/libffi.so.6
       - sh -c "$(curl -fsSL https://raw.githubusercontent.com/zeta96/kernelci/master/L_drone_gcc_s)"
     when:
       branch:
