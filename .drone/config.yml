@@ -12,7 +12,7 @@ steps:
   - name: Compile
     image: ubuntu:rolling
     commands:
-      - apt-get -y update && apt-get -y install bc build-essential bison python2 zip unzip curl git wget zstd
+      - apt-get -y update && apt-get -y install bc build-essential bison bash libstdc++6 python2 zip unzip curl git wget zstd
       - sh -c "$(curl -fsSL https://raw.githubusercontent.com/zeta96/kernelci/master/L_drone_gcc_s)"
     when:
       branch:
