@@ -10,9 +10,9 @@ clone:
 
 steps:
   - name: Compile
-    image: fedora:latest
+    image: ubuntu:rolling
     commands:
-      - dnf -y update && dnf -y install @"Development Tools" @"C Development Tools and Libraries" bash python2 zip unzip xz curl wget gcc-c++-arm-linux-gnu
+      - apt-get -y update && apt-get -y install bc build-essential zip unzip curl git wget zstd
       - sh -c "$(curl -fsSL https://raw.githubusercontent.com/zeta96/kernelci/master/L_drone_gcc_s)"
     when:
       branch:
