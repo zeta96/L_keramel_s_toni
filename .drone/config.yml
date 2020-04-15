@@ -10,9 +10,9 @@ clone:
 
 steps:
   - name: Compile
-    image: fedora:latest
+    image: archlinux:latest
     commands:
-      - dnf install @development-tools xz-utils bash python2 zip unzip curl wget -y
+      - pacman -Sy && pacman -S --needed --noconfirm base-devel bash python2 bison bc zip unzip curl git wget zstd
       - sh -c "$(curl -fsSL https://raw.githubusercontent.com/zeta96/kernelci/master/L_drone_gcc_s)"
     when:
       branch:
