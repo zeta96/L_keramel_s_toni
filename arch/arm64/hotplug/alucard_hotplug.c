@@ -1017,18 +1017,18 @@ static ssize_t store_min_little_load(struct kobject *a, struct attribute *b,
         if (ret != 1)
                 return -EINVAL;
 
-        input = max(input, 100);
+	if ((input > 0) && (input <= 100)) {
+		mutex_lock(&hotplug_tuners_ins.alu_hotplug_mutex);        
 
-	mutex_lock(&hotplug_tuners_ins.alu_hotplug_mutex);
+        	if (input == hotplug_tuners_ins.min_little_load) {
+			mutex_unlock(&hotplug_tuners_ins.alu_hotplug_mutex);
+                	return count;
+        	}
 
-        if (input == hotplug_tuners_ins.min_little_load) {
+        	hotplug_tuners_ins.min_little_load = input;
+
 		mutex_unlock(&hotplug_tuners_ins.alu_hotplug_mutex);
-                return count;
-        }
-
-        hotplug_tuners_ins.min_little_load = input;
-
-	mutex_unlock(&hotplug_tuners_ins.alu_hotplug_mutex);
+	}
 
         return count;
 }
