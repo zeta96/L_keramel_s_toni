@@ -20,6 +20,9 @@
 
 static const char * const backends[] = {
 	"lz4",
+#if IS_ENABLED(CONFIG_CRYPTO_ZSTD)
+	"zstd",
+#endif
 	NULL
 };
 
