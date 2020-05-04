@@ -1,6 +1,6 @@
 /*
  * cpuidle.c - core cpuidle infrastructure
- *
+ *fff
  * (C) 2006-2007 Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>
  *               Shaohua Li <shaohua.li@intel.com>
  *               Adam Belay <abelay@novell.com>
