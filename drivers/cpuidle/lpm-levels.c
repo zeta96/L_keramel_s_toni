@@ -993,12 +993,14 @@ static int lpm_cpuidle_enter(struct cpuidle_device *dev,
 	if (need_resched())
 		goto exit;
 
+	cpuidle_set_idle_cpu(dev->cpu);
 	if (!use_psci) {
 		success = msm_cpu_pm_enter_sleep(cluster->cpu->levels[idx].mode,
 				true);
 	} else {
 		success = psci_enter_sleep(cluster, idx, true);
 	}
+	cpuidle_clear_idle_cpu(dev->cpu);
 
 exit:
 	end_time = ktime_to_ns(ktime_get());
