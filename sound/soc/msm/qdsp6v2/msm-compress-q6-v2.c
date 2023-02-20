@@ -3136,14 +3136,16 @@ static int msm_compr_audio_effects_config_get(struct snd_kcontrol *kcontrol,
 			pr_err("%s: DTS_EAGLE_MODULE parameter's requested size (%li) too large (max size is %i)\n",
 				__func__, values[2],
 				DTS_EAGLE_MAX_PARAM_SIZE_FOR_ALSA);
-			return -EINVAL;
+			ret = -EINVAL;
+			goto done;
 		}
 		msm_dts_eagle_handle_asm(NULL, (void *)&values[1],
 					 true, true, prtd->audio_client, NULL);
 		break;
 	default:
 		pr_err("%s: Invalid effects config module\n", __func__);
-		return -EINVAL;
+		ret = -EINVAL;
+		goto done;
 	}
 done:
 	mutex_unlock(&pdata->lock);
