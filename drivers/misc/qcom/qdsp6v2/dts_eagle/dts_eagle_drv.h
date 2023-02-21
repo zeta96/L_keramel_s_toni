@@ -15,10 +15,10 @@
     dynamic_pr_debug(fmt, ##__VA_ARGS__)
 #elif defined(DEBUG)
 #define dts_eagle_drv_dbg_msg(fmt, ...)  \
-    (printk(KERN_INFO "DTS_EAGLE_DRIVER: " fmt "\n", ##__VA_ARGS__))
+    printk(KERN_INFO "DTS_EAGLE_DRIVER: " fmt "\n", ##__VA_ARGS__)
 #else
 #define dts_eagle_drv_dbg_msg(fmt, ...) \
-    (no_printk(KERN_INFO "DTS_EAGLE_DRIVER: " fmt "\n", ##__VA_ARGS__))
+    no_printk(KERN_INFO "DTS_EAGLE_DRIVER: " fmt "\n", ##__VA_ARGS__)
 #endif
 
 #define EAGLE_DRIVER_ID 0xF2
